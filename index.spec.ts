@@ -1,8 +1,9 @@
 import * as puppeteer from "puppeteer"
 
+jest.setTimeout(15000)
 describe("Create a default card", () => {
 	it("should create a card", async function () {
-		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 50 })
+		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 20 })
 		try {
 			const page = await browser.newPage()
 			page.setViewport({ width: 1920, height: 1080 })
@@ -52,17 +53,20 @@ describe("Create a default card", () => {
 					"body > smoothly-notifier > p2p-router > p2p-portal > smoothly-app > smoothly-notifier > main > smoothly-room > p2p-payment-view > p2p-card-view > p2p-card-table > p2p-notifier > p2p-card-create > main > form > aside > div:nth-child(2) > smoothly-submit"
 				)
 			)?.click()
+			await page.on("response", response => {
+				if (
+					response.request().method() === "POST" &&
+					response.url() === `https://api.pax2pay.qa/mpay2-service/v2/cards/virtual/tokenised`
+				)
+					expect(response.status()).toEqual(201)
+			})
 		} catch (error) {
-			// const page = await browser.pages()
 			console.error(error.message)
 			console.log(error)
-
-			//await page.screenshot({ path: 'pax2payreportERROR.png', fullPage: true })
-			// await browser.close();
-			//await browser.close()
+			await browser.close()
 			throw error
 		} finally {
-			// await browser.close();
+			await browser.close()
 		}
 	})
 })
