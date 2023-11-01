@@ -2,7 +2,7 @@ import * as puppeteer from "puppeteer"
 
 describe("Create a default card", () => {
 	it("should create a card", async function () {
-		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 50 })
+		const browser = await puppeteer.launch({ headless: true, devtools: false, slowMo: 50 })
 		try {
 			const page = await browser.newPage()
 			page.setViewport({ width: 1920, height: 1080 })
