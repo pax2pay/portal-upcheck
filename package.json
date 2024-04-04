@@ -69,6 +69,7 @@
 		"typescript": "^5.4.3"
 	},
 	"dependencies": {
+		"@pax2pay/client": "github:pax2pay/client-js",
 		"gracely": "^2.0.8",
 		"isoly": "^2.3.8"
 	},

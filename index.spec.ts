@@ -1,37 +1,43 @@
+import { ProviderCode } from "@pax2pay/client"
 import * as puppeteer from "puppeteer"
 
-jest.setTimeout(30000)
-describe("Create a default card", () => {
-	it("should create a card", async function () {
-		const url = "http://localhost:3333/login"
-		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 20 })
+jest.setTimeout(60000)
+describe("Create a card", () => {
+	async function createCard(provider: ProviderCode) {
+		let selectedAccount: string
+		if (provider == "modulr")
+			selectedAccount =
+				"#createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .modulr)"
+		else
+			selectedAccount =
+				"#createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .pax2pay)"
+		const url = "https://uat.pax2pay.com/login"
+		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
 		try {
 			const page = await browser.newPage()
 			page.setViewport({ width: 1920, height: 1080 })
 			await page.goto(url)
 			const usernameSelector = "#username input.sc-smoothly-input"
-			await page.waitForSelector(usernameSelector, { timeout: 30000 })
+			await page.waitForSelector(usernameSelector, { timeout: 60000 })
 			await page.type(usernameSelector, "mcom-sa")
 			const passwordSelector = "#password input.sc-smoothly-input"
-			await page.waitForSelector(passwordSelector, { timeout: 30000 })
+			await page.waitForSelector(passwordSelector, { timeout: 60000 })
 			await page.type(passwordSelector, "Password69420")
 			const loginButtonSelector = "#loginBtn button"
-			await page.waitForSelector(loginButtonSelector, { timeout: 30000 })
+			await page.waitForSelector(loginButtonSelector, { timeout: 60000 })
 			await page.click(loginButtonSelector)
 			await page.waitForNavigation({ waitUntil: "networkidle0" })
 			const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
-			await page.waitForSelector(paymentRoom, { timeout: 30000 })
+			await page.waitForSelector(paymentRoom, { timeout: 60000 })
 			await page.click(paymentRoom)
 			const createCardButton = "#createCardBtn"
-			await page.waitForSelector(createCardButton, { timeout: 30000 })
+			await page.waitForSelector(createCardButton, { timeout: 60000 })
 			await page.click(createCardButton)
 			const accountSelector = "#createCardForm #accountSelector > smoothly-selector"
 			await page.waitForSelector(accountSelector)
 			await page.click(accountSelector)
-			const firstAccount =
-				"#createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1)"
-			await page.waitForSelector(firstAccount)
-			await page.click(firstAccount)
+			await page.waitForSelector(selectedAccount)
+			await page.click(selectedAccount)
 			const cardTypeSelector = "#createCardForm #cardTypeSelector > smoothly-selector"
 			await page.waitForSelector(cardTypeSelector)
 			await page.click(cardTypeSelector)
@@ -46,13 +52,11 @@ describe("Create a default card", () => {
 			const submitButton = "#createCardForm #submitBtn"
 			await page.waitForSelector(submitButton)
 			await page.click(submitButton)
-			await page.on("response", response => {
-				if (
-					response.request().method() === "POST" &&
-					response.url() === `${url}/mpay2-service/v2/cards/virtual/tokenised`
-				)
-					expect(response.status()).toEqual(201)
-			})
+			await page.waitForSelector("#csc", { timeout: 60000 })
+			const elementHandler = await page.$("#csc")
+			const frame = await elementHandler?.contentFrame()
+			const csc = await frame?.$eval("smoothly-input", (el: any) => el.value)
+			expect(csc).toMatch(/^\d{3}$/)
 		} catch (error) {
 			console.error(error.message)
 			console.log(error)
@@ -61,5 +65,11 @@ describe("Create a default card", () => {
 		} finally {
 			await browser.close()
 		}
+	}
+	it("should create a modulr card", async function () {
+		await createCard("modulr")
+	})
+	it("should create a pax2pay card", async function () {
+		await createCard("pax2pay")
 	})
 })
