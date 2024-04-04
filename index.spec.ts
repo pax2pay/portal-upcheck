@@ -4,13 +4,6 @@ import * as puppeteer from "puppeteer"
 jest.setTimeout(60000)
 describe("Create a card", () => {
 	async function createCard(provider: ProviderCode) {
-		let selectedAccount: string
-		if (provider == "modulr")
-			selectedAccount =
-				"#createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .modulr)"
-		else
-			selectedAccount =
-				"#createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .pax2pay)"
 		const url = "https://uat.pax2pay.com/login"
 		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
 		try {
@@ -36,6 +29,7 @@ describe("Create a card", () => {
 			const accountSelector = "#createCardForm #accountSelector > smoothly-selector"
 			await page.waitForSelector(accountSelector)
 			await page.click(accountSelector)
+			const selectedAccount = `#createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .${provider})`
 			await page.waitForSelector(selectedAccount)
 			await page.click(selectedAccount)
 			const cardTypeSelector = "#createCardForm #cardTypeSelector > smoothly-selector"
