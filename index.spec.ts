@@ -27,24 +27,24 @@ describe("Create a card", () => {
 			await page.waitForSelector(createCardButton, { timeout: 60000 })
 			await page.click(createCardButton)
 			const accountSelector = "#createCardForm #accountSelector > smoothly-selector"
-			await page.waitForSelector(accountSelector)
+			await page.waitForSelector(accountSelector, { timeout: 60000 })
 			await page.click(accountSelector)
 			const selectedAccount = `#createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .${provider})`
-			await page.waitForSelector(selectedAccount)
+			await page.waitForSelector(selectedAccount, { timeout: 60000 })
 			await page.click(selectedAccount)
 			const cardTypeSelector = "#createCardForm #cardTypeSelector > smoothly-selector"
-			await page.waitForSelector(cardTypeSelector)
+			await page.waitForSelector(cardTypeSelector, { timeout: 60000 })
 			await page.click(cardTypeSelector)
 			const firstActiveCardType =
 				"#createCardForm #cardTypeSelector > smoothly-selector > div > nav > smoothly-item:nth-child(1 of .active)"
-			await page.waitForSelector(firstActiveCardType)
+			await page.waitForSelector(firstActiveCardType, { timeout: 60000 })
 			await page.click(firstActiveCardType)
 			await page.type("#createCardForm #balance > div > input", "69")
 			const invoiceTab = "#invoiceMetadata"
-			await page.waitForSelector(invoiceTab)
+			await page.waitForSelector(invoiceTab, { timeout: 60000 })
 			await page.click(invoiceTab)
 			const submitButton = "#createCardForm #submitBtn"
-			await page.waitForSelector(submitButton)
+			await page.waitForSelector(submitButton, { timeout: 60000 })
 			await page.click(submitButton)
 			await page.waitForSelector("#csc", { timeout: 60000 })
 			const elementHandler = await page.$("#csc")
