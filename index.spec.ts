@@ -8,6 +8,7 @@ describe("Create a card", () => {
 		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
 		try {
 			const page = await browser.newPage()
+			await page.setCacheEnabled(false)
 			page.setViewport({ width: 1920, height: 1080 })
 			await page.goto(url)
 			const usernameSelector = "#username input.sc-smoothly-input"
