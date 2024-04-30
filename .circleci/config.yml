@@ -67,9 +67,13 @@ jobs:
       - attach_workspace:
           at: workspace
   pax2pay-portal-quiet:
+    docker:
+      - image: cimg/node:20.4.0-browsers
     executor: node/default
     <<: *default
     steps:
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - test-pax2pay-portal
       - attach_workspace:
           at: workspace
@@ -78,9 +82,13 @@ jobs:
           mentions: '@here'
           template: basic_fail_1
   pax2pay-portal-notify:
+    docker:
+      - image: cimg/node:20.4.0-browsers
     executor: node/default
     <<: *default
     steps:
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - test-pax2pay-portal
       - attach_workspace:
           at: workspace
@@ -92,7 +100,7 @@ jobs:
           event: pass
           template: basic_success_1
 workflows:
-  pax2pay-banking-treasury:
+  pax2pay-banking-quiet:
     triggers:
       - schedule:
           cron: "7,17,27,47,57 * * * *"
