@@ -99,22 +99,21 @@ workflows:
   often:
     triggers:
       - schedule:
-          cron: "* * * * *"
-          #"7,17,27,47,57 * * * *"
+          cron: "7,17,27,37,47,57 * * * *"
           filters:
             branches:
               only: master
     jobs:
-      - pax2pay-portal-mute
-#  daily:
-#    triggers:
-#      - schedule:
-#          cron: "37 13 * * *"
-#          filters:
-#            branches:
-#              only: master
-#    jobs:
-#      - pax2pay-portal-notify
+      - pax2pay-portal-quiet
+  daily:
+    triggers:
+      - schedule:
+          cron: "37 13 * * *"
+          filters:
+            branches:
+              only: master
+    jobs:
+      - pax2pay-portal-notify
   build:
     jobs:
       - pax2pay-portal-mute
