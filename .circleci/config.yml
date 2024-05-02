@@ -99,8 +99,7 @@ workflows:
   often:
     triggers:
       - schedule:
-          cron: "* * * * *"
-          #"7,17,27,47,57 * * * *"
+          cron: "7,17,27,47,57 * * * *"
           filters:
             branches:
               only: master
