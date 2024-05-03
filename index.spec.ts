@@ -7,7 +7,6 @@ describe("Create a card", () => {
 		const url = "https://qa.pax2pay.com/login"
 		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
 		try {
-			expect(false).toBeTruthy()
 			const page = await browser.newPage()
 			page.setViewport({ width: 1920, height: 1080 })
 			await page.goto(url)
