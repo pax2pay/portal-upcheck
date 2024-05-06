@@ -9,6 +9,19 @@ describe("Create a card", () => {
 		try {
 			const page = await browser.newPage()
 			page.setViewport({ width: 1920, height: 1080 })
+			page.on("response", async response => {
+				try {
+					if (
+						response.request().method() === "POST" &&
+						response.url().endsWith("login") &&
+						response.headers()["content-type"].includes("application/json")
+					) {
+						console.log("trackingId", (await response.json())?.trackingId)
+					}
+				} catch (error) {
+					console.log(error)
+				}
+			})
 			await page.goto(url)
 			const usernameSelector = "#username input.sc-smoothly-input"
 			await page.waitForSelector(usernameSelector, { timeout: 60000 })
@@ -20,6 +33,10 @@ describe("Create a card", () => {
 			await page.waitForSelector(loginButtonSelector, { timeout: 60000 })
 			await page.click(loginButtonSelector)
 			await page.waitForNavigation({ waitUntil: "networkidle0" })
+			// await page.evaluate(async () => {
+			// 	console.log("authData", window.sessionStorage.getItem("authData"))
+			// })
+			// puppeteer.CDPSessionEvent.SessionAttached.
 			const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
 			await page.waitForSelector(paymentRoom, { timeout: 60000 })
 			await page.click(paymentRoom)
