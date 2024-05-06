@@ -33,10 +33,6 @@ describe("Create a card", () => {
 			await page.waitForSelector(loginButtonSelector, { timeout: 60000 })
 			await page.click(loginButtonSelector)
 			await page.waitForNavigation({ waitUntil: "networkidle0" })
-			// await page.evaluate(async () => {
-			// 	console.log("authData", window.sessionStorage.getItem("authData"))
-			// })
-			// puppeteer.CDPSessionEvent.SessionAttached.
 			const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
 			await page.waitForSelector(paymentRoom, { timeout: 60000 })
 			await page.click(paymentRoom)
