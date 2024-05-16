@@ -1,6 +1,7 @@
 import { ProviderCode } from "@pax2pay/client"
+import dotenv from "dotenv"
 import * as puppeteer from "puppeteer"
-
+dotenv.config()
 jest.setTimeout(60000)
 describe("Create a card", () => {
 	async function createCard(provider: ProviderCode) {
