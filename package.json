@@ -47,7 +47,7 @@
 		"lint": "eslint --max-warnings=0 '**/*.{ts,tsx}'",
 		"fix": "eslint '**/*.{ts,tsx}' --fix",
 		"build": "tsc -p .",
-		"test": "jest",
+		"test": "jest --setupFiles dotenv/config",
 		"prepare": "npm run build",
 		"clean": "rimraf dist node_modules coverage"
 	},
@@ -71,7 +71,8 @@
 		"@pax2pay/client": "github:pax2pay/client-js",
 		"gracely": "^2.0.8",
 		"isoly": "^2.3.8",
-		"puppeteer": "^22.6.5"
+		"puppeteer": "^22.6.5",
+		"ts-node": "^10.9.2"
 	},
 	"overrides": {
 		"semver": "7.5.3",

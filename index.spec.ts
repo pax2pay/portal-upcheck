@@ -25,10 +25,10 @@ describe("Create a card", () => {
 			await page.goto(url)
 			const usernameSelector = "#username input.sc-smoothly-input"
 			await page.waitForSelector(usernameSelector, { timeout: 60000 })
-			await page.type(usernameSelector, "USERNAME")
+			await page.type(usernameSelector, process.env.username ?? "")
 			const passwordSelector = "#password input.sc-smoothly-input"
 			await page.waitForSelector(passwordSelector, { timeout: 60000 })
-			await page.type(passwordSelector, "PASSWORD")
+			await page.type(passwordSelector, process.env.password ?? "")
 			const loginButtonSelector = "#loginBtn button"
 			await page.waitForSelector(loginButtonSelector, { timeout: 60000 })
 			await page.click(loginButtonSelector)
