@@ -17,7 +17,10 @@ describe("Create a card", () => {
 						response.url().endsWith("login") &&
 						response.headers()["content-type"].includes("application/json")
 					) {
-						console.log("trackingId", (await response.json())?.trackingId)
+						if (response.status() == 201)
+							console.log("trackingId", (await response.json())?.trackingId)
+						else
+							throw new Error(await response.json())
 					}
 				} catch (error) {
 					console.log(error)
@@ -60,7 +63,20 @@ describe("Create a card", () => {
 			const submitButton = "#createCardForm #submitBtn"
 			await page.waitForSelector(submitButton, { timeout: 60000 })
 			await page.click(submitButton)
-
+			page.on("response", async response => {
+				try {
+					if (
+						response.request().method() === "POST" &&
+						response.url().endsWith("/virtual/tokenised") &&
+						response.headers()["content-type"].includes("application/json")
+					) {
+						if (response.status() != 201)
+							throw new Error(await response.json())
+					}
+				} catch (error) {
+					console.log(error)
+				}
+			})
 			await page.waitForSelector("#csc", { timeout: 60000 })
 			const elementHandler = await page.$("#csc")
 			const frame = await elementHandler?.contentFrame()
