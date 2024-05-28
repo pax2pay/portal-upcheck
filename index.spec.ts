@@ -19,18 +19,23 @@ describe("Create a card", () => {
 					) {
 						if (response.status() == 200)
 							console.log("trackingId", (await response.json())?.trackingId)
-						else
-							throw new Error(await response.json())
+						else {
+							await page.close()
+							throw new Error("Failed to login")
+						}
 					}
 					if (
 						response.request().method() === "POST" &&
 						response.url().endsWith("/virtual/tokenised") &&
 						response.headers()["content-type"].includes("application/json")
 					) {
-						if (response.status() != 201)
-							throw new Error(await response.json())
+						if (response.status() != 201) {
+							await page.close()
+							throw new Error("Failed to create a card")
+						}
 					}
 				} catch (error) {
+					console.error(error.message)
 					console.log(error)
 				}
 			})
