@@ -7,8 +7,8 @@ describe("Create a card", () => {
 	async function createCard(provider: ProviderCode) {
 		const url = "https://qa.pax2pay.com/login"
 		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
+		const page = await browser.newPage()
 		try {
-			const page = await browser.newPage()
 			page.setViewport({ width: 1920, height: 1080 })
 			page.on("response", async response => {
 				try {
@@ -20,6 +20,8 @@ describe("Create a card", () => {
 						if (response.status() == 200)
 							console.log("trackingId", (await response.json())?.trackingId)
 						else {
+							const screenshot = await page.screenshot({ encoding: "base64" })
+							console.error("screenshot:", screenshot)
 							await page.close()
 							throw new Error("Failed to login")
 						}
@@ -30,13 +32,14 @@ describe("Create a card", () => {
 						response.headers()["content-type"].includes("application/json")
 					) {
 						if (response.status() != 201) {
+							const screenshot = await page.screenshot({ encoding: "base64" })
+							console.error("screenshot:", screenshot)
 							await page.close()
 							throw new Error("Failed to create a card")
 						}
 					}
 				} catch (error) {
 					console.error(error.message)
-					console.log(error)
 				}
 			})
 			await page.goto(url)
@@ -83,10 +86,9 @@ describe("Create a card", () => {
 			const csc = await frame?.$eval("input.sc-smoothly-input", (el: any) => el.value)
 			expect(csc).toMatch(/^\d{3}$/)
 		} catch (error) {
+			const screenshot = await page.screenshot({ encoding: "base64" })
+			console.error("screenshot:", screenshot)
 			console.error(error.message)
-			console.log(error)
-			await browser.close()
-			throw error
 		} finally {
 			await browser.close()
 		}
