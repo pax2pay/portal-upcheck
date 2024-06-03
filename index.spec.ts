@@ -44,7 +44,7 @@ describe("Create a card", () => {
 					}
 				})
 				await page.goto(`${url}/login`, {
-					waitUntil: "networkidle0",
+					waitUntil: "networkidle2",
 					timeout: 60000,
 				})
 				const usernameSelector = "#username input.sc-smoothly-input"
