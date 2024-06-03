@@ -43,10 +43,14 @@ describe("Create a card", () => {
 						console.error(error.message)
 					}
 				})
-				await page.goto(`${url}/login`, {
+				const initialPage = await page.goto(`${url}/login`, {
 					waitUntil: "networkidle2",
 					timeout: 60000,
 				})
+				if (initialPage?.status())
+					console.log("Initialized page! Status:", initialPage.status())
+				else
+					console.error("Puppeteer failed to initialize the page")
 				const usernameSelector = "#username input.sc-smoothly-input"
 				await page.waitForSelector(usernameSelector, { timeout: 60000 })
 				await page.type(usernameSelector, process.env.username ?? "")
