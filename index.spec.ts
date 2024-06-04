@@ -7,7 +7,7 @@ describe("Create a card", () => {
 	async function createCard(providers: ProviderCode[]) {
 		if (providers.length) {
 			const url = "https://qa.pax2pay.com"
-			const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
+			const browser = await puppeteer.launch({ headless: true, devtools: false, slowMo: 30 })
 			const page = await browser.newPage()
 			try {
 				page.setViewport({ width: 1920, height: 1080 })
@@ -47,9 +47,7 @@ describe("Create a card", () => {
 					waitUntil: "networkidle2",
 					timeout: 60000,
 				})
-				if (initialPage?.status())
-					console.log("Initialized page! Status:", initialPage.status())
-				else
+				if (!initialPage?.status())
 					console.error("Puppeteer failed to initialize the page")
 				const usernameSelector = "#username input.sc-smoothly-input"
 				await page.waitForSelector(usernameSelector, { timeout: 60000 })
