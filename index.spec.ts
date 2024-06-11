@@ -39,6 +39,14 @@ describe("Create a card", () => {
 								throw new Error("Failed to create a card")
 							}
 						}
+						if (response.request().method() === "GET" && response.url().startsWith("https://cde.pax2pay.qa/display")) {
+							if (response.status() != 200) {
+								const screenshot = await page.screenshot({ encoding: "base64" })
+								console.error("screenshot:", screenshot)
+								await page.close()
+								throw new Error("ui-cde failed to display")
+							}
+						}
 					} catch (error) {
 						console.error(error.message)
 					}
