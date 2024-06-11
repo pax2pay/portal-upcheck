@@ -55,8 +55,9 @@ describe("Create a card", () => {
 					waitUntil: "networkidle2",
 					timeout: 60000,
 				})
-				if (!initialPage?.status())
-					console.error("Puppeteer failed to initialize the page")
+				if (initialPage?.status() != 200)
+					console.error("Puppeteer failed to initialize the page. Status:" + initialPage?.status())
+
 				const usernameSelector = "#username input.sc-smoothly-input"
 				await page.waitForSelector(usernameSelector, { timeout: 60000 })
 				await page.type(usernameSelector, process.env.username ?? "")
