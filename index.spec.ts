@@ -6,7 +6,7 @@ jest.setTimeout(60000)
 describe("Create a card", () => {
 	async function createCard(providers: ProviderCode[]) {
 		if (providers.length) {
-			const url = "https://qa.pax2pay.com"
+			const url = "https://ui.pax2pay.app"
 			const browser = await puppeteer.launch({ headless: true, devtools: false, slowMo: 30 })
 			const page = await browser.newPage()
 			try {
