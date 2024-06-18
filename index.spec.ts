@@ -58,10 +58,10 @@ describe("Create a card", () => {
 				if (initialPage?.status() != 200)
 					console.error("Puppeteer failed to initialize the page. Status:" + initialPage?.status())
 
-				const usernameSelector = "#username input.sc-smoothly-input"
+				const usernameSelector = "#username input.sc-smoothly-0-input, #username input.sc-smoothly-input"
 				await page.waitForSelector(usernameSelector, { timeout: 60000 })
 				await page.type(usernameSelector, process.env.username ?? "")
-				const passwordSelector = "#password input.sc-smoothly-input"
+				const passwordSelector = "#password input.sc-smoothly-0-input, #password input.sc-smoothly-input"
 				await page.waitForSelector(passwordSelector, { timeout: 60000 })
 				await page.type(passwordSelector, process.env.password ?? "")
 				const loginButtonSelector = "#loginBtn button"
@@ -75,17 +75,23 @@ describe("Create a card", () => {
 					const createCardButton = "#createCardBtn"
 					await page.waitForSelector(createCardButton, { timeout: 60000 })
 					await page.click(createCardButton)
-					const accountSelector = "#createCardForm #accountSelector > smoothly-selector"
+					const accountSelector =
+						"#createCardForm #accountSelector > smoothly-0-selector, #createCardForm #accountSelector > smoothly-selector"
 					await page.waitForSelector(accountSelector, { timeout: 60000 })
 					await page.click(accountSelector)
-					const selectedAccount = `#createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .${providers[i]})`
+					const selectedAccount =
+						`#createCardForm #accountSelector > smoothly-0-selector> div > nav > smoothly-0-item:nth-child(1 of .${providers[i]})` +
+						`, #createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .${providers[i]})`
 					await page.waitForSelector(selectedAccount, { timeout: 60000 })
 					await page.click(selectedAccount)
-					const cardTypeSelector = "#createCardForm #cardTypeSelector > smoothly-selector"
+					const cardTypeSelector =
+						"#createCardForm #cardTypeSelector > smoothly-0-selector" +
+						", #createCardForm #cardTypeSelector > smoothly-selector"
 					await page.waitForSelector(cardTypeSelector, { timeout: 60000 })
 					await page.click(cardTypeSelector)
 					const firstActiveCardType =
-						"#createCardForm #cardTypeSelector > smoothly-selector > div > nav > smoothly-item:nth-child(1 of .active)"
+						"#createCardForm #cardTypeSelector > smoothly-0-selector > div > nav > smoothly-0-item:nth-child(1 of .active)" +
+						", #createCardForm #cardTypeSelector > smoothly-selector > div > nav > smoothly-item:nth-child(1 of .active)"
 					await page.waitForSelector(firstActiveCardType, { timeout: 60000 })
 					await page.click(firstActiveCardType)
 					await page.type("#createCardForm #balance > div > input", "69")
@@ -98,8 +104,8 @@ describe("Create a card", () => {
 					await page.waitForSelector("#csc", { timeout: 60000 })
 					const elementHandler = await page.$("#csc")
 					const frame = await elementHandler?.contentFrame()
-					await frame?.waitForSelector("input.sc-smoothly-input", { timeout: 60000 })
-					const csc = await frame?.$eval("input.sc-smoothly-input", (el: any) => el.value)
+					await frame?.waitForSelector("input.sc-smoothly-0-input, input.sc-smoothly-input", { timeout: 60000 })
+					const csc = await frame?.$eval("input.sc-smoothly-0-input, input.sc-smoothly-input", (el: any) => el.value)
 					expect(csc).toMatch(/^\d{3}$/)
 					await page.goto(`${url}/payment`, {
 						waitUntil: "networkidle0",
