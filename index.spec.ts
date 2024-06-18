@@ -7,7 +7,7 @@ describe("Create a card", () => {
 	async function createCard(providers: ProviderCode[]) {
 		if (providers.length) {
 			const url = "https://ui.pax2pay.qa"
-			const browser = await puppeteer.launch({ headless: true, devtools: false, slowMo: 30 })
+			const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
 			const page = await browser.newPage()
 			try {
 				page.setViewport({ width: 1920, height: 1080 })
