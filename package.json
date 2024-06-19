@@ -71,7 +71,7 @@
 		"@pax2pay/client": "github:pax2pay/client-js",
 		"gracely": "^2.0.8",
 		"isoly": "^2.3.8",
-		"puppeteer": "^22.6.5",
+		"puppeteer": "^22.11.2",
 		"ts-node": "^10.9.2"
 	},
 	"overrides": {
