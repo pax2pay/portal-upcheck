@@ -27,26 +27,6 @@ describe("Create a card", () => {
 								throw new Error("Failed to login")
 							}
 						}
-						if (
-							response.request().method() === "POST" &&
-							response.url().endsWith("/virtual/tokenised") &&
-							response.headers()["content-type"].includes("application/json")
-						) {
-							if (response.status() != 201) {
-								const screenshot = await page.screenshot({ encoding: "base64" })
-								console.error("screenshot:", screenshot)
-								await page.close()
-								throw new Error("Failed to create a card")
-							}
-						}
-						if (response.request().method() === "GET" && response.url().startsWith("https://cde.pax2pay.qa/display")) {
-							if (response.status() != 200) {
-								const screenshot = await page.screenshot({ encoding: "base64" })
-								console.error("screenshot:", screenshot)
-								await page.close()
-								throw new Error("ui-cde failed to display")
-							}
-						}
 					} catch (error) {
 						console.error(error.message)
 					}
@@ -101,7 +81,27 @@ describe("Create a card", () => {
 					const submitButton = "#createCardForm #submitBtn"
 					await page.waitForSelector(submitButton, { timeout: 60000 })
 					await page.click(submitButton)
-					await page.waitForSelector("#csc", { timeout: 60000 })
+					await page
+						.waitForResponse(
+							response =>
+								response.request().method() === "POST" &&
+								response.url().endsWith("/virtual/tokenised") &&
+								response.status() === 201
+						)
+						.catch(async error => {
+							throw new Error("Failed to create a card." + error)
+						})
+					await page
+						.waitForResponse(
+							response =>
+								response.request().method() === "GET" &&
+								response.url().startsWith("https://cde.pax2pay.qa/display") &&
+								response.status() === 200
+						)
+						.catch(async error => {
+							throw new Error("Failed to display the card. " + error)
+						})
+					await page.waitForSelector("#csc")
 					const elementHandler = await page.$("#csc")
 					const frame = await elementHandler?.contentFrame()
 					await frame?.waitForSelector("input.sc-smoothly-0-input, input.sc-smoothly-input", { timeout: 60000 })
