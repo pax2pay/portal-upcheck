@@ -11,10 +11,14 @@ describe("Create a card", () => {
 			const page = await browser.newPage()
 			try {
 				page.setViewport({ width: 1920, height: 1080 })
-				await page.goto(`${url}/login`, {
-					waitUntil: "networkidle2",
-					timeout: 60000,
-				})
+				await page
+					.goto(`${url}/login`, {
+						waitUntil: "networkidle2",
+						timeout: 60000,
+					})
+					.catch(async error => {
+						throw new Error("Failed to load login page." + error)
+					})
 				const usernameSelector = "#username input.sc-smoothly-0-input, #username input.sc-smoothly-input"
 				await page.waitForSelector(usernameSelector, { timeout: 60000 })
 				await page.type(usernameSelector, process.env.username ?? "")
