@@ -11,33 +11,10 @@ describe("Create a card", () => {
 			const page = await browser.newPage()
 			try {
 				page.setViewport({ width: 1920, height: 1080 })
-				page.on("response", async response => {
-					try {
-						if (
-							response.request().method() === "POST" &&
-							response.url().endsWith("login") &&
-							response.headers()["content-type"].includes("application/json")
-						) {
-							if (response.status() == 200)
-								console.log("trackingId", (await response.json())?.trackingId)
-							else {
-								const screenshot = await page.screenshot({ encoding: "base64" })
-								console.error("screenshot:", screenshot)
-								await page.close()
-								throw new Error("Failed to login")
-							}
-						}
-					} catch (error) {
-						console.error(error.message)
-					}
-				})
-				const initialPage = await page.goto(`${url}/login`, {
+				await page.goto(`${url}/login`, {
 					waitUntil: "networkidle2",
 					timeout: 60000,
 				})
-				if (initialPage?.status() != 200)
-					console.error("Puppeteer failed to initialize the page. Status:" + initialPage?.status())
-
 				const usernameSelector = "#username input.sc-smoothly-0-input, #username input.sc-smoothly-input"
 				await page.waitForSelector(usernameSelector, { timeout: 60000 })
 				await page.type(usernameSelector, process.env.username ?? "")
@@ -47,6 +24,15 @@ describe("Create a card", () => {
 				const loginButtonSelector = "#loginBtn button"
 				await page.waitForSelector(loginButtonSelector, { timeout: 60000 })
 				await page.click(loginButtonSelector)
+				await page
+					.waitForResponse(
+						response =>
+							response.request().method() === "POST" && response.url().endsWith("login") && response.status() === 200
+					)
+					.then(async response => console.log("trackingId", (await response.json())?.trackingId))
+					.catch(async error => {
+						throw new Error("Failed to login." + error)
+					})
 				await page.waitForNavigation({ waitUntil: "networkidle0", timeout: 60000 })
 				const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
 				await page.waitForSelector(paymentRoom, { timeout: 60000 })
