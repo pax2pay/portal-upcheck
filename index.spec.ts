@@ -45,13 +45,10 @@ describe("Create a card", () => {
 					const createCardButton = "#createCardBtn"
 					await page.waitForSelector(createCardButton, { timeout: 60000 })
 					await page.click(createCardButton)
-					const accountSelector =
-						"#createCardForm #accountSelector > smoothly-0-selector, #createCardForm #accountSelector > smoothly-selector"
+					const accountSelector = "#createCardForm #accountSelector > smoothly-input-select"
 					await page.waitForSelector(accountSelector, { timeout: 60000 })
 					await page.click(accountSelector)
-					const selectedAccount =
-						`#createCardForm #accountSelector > smoothly-0-selector> div > nav > smoothly-0-item:nth-child(1 of .${providers[i]})` +
-						`, #createCardForm #accountSelector > smoothly-selector> div > nav > smoothly-item:nth-child(1 of .${providers[i]})`
+					const selectedAccount = `#createCardForm #accountSelector > smoothly-input-select> div > smoothly-item:nth-child(1 of .${providers[i]})`
 					await page.waitForSelector(selectedAccount, { timeout: 60000 })
 					await page.click(selectedAccount)
 					const cardTypeSelector =
