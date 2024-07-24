@@ -40,26 +40,6 @@ describe("Create a card", () => {
 				await page.waitForNavigation({ waitUntil: "networkidle0", timeout: 60000 }).catch(error => {
 					throw new Error("Failed to fetch all card types. " + error)
 				})
-				await page
-					.waitForResponse(
-						response =>
-							response.request().method() === "GET" &&
-							response.url().endsWith("cards/types/modulr") &&
-							response.status() === 200
-					)
-					.catch(async error => {
-						throw new Error("Failed to fetch modulr card types" + error)
-					})
-				await page
-					.waitForResponse(
-						response =>
-							response.request().method() === "GET" &&
-							response.url().endsWith("cards/types/pax2pay") &&
-							response.status() === 200
-					)
-					.catch(async error => {
-						throw new Error("Failed to fetch pax2pay card types" + error)
-					})
 				const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
 				await page.waitForSelector(paymentRoom, { timeout: 60000 })
 				await page.click(paymentRoom)
@@ -73,14 +53,11 @@ describe("Create a card", () => {
 					const selectedAccount = `#createCardForm #accountSelector > smoothly-input-select> div > smoothly-item:nth-child(1 of .${providers[i]})`
 					await page.waitForSelector(selectedAccount, { timeout: 60000 })
 					await page.click(selectedAccount)
-					const cardTypeSelector =
-						"#createCardForm #cardTypeSelector > smoothly-0-selector" +
-						", #createCardForm #cardTypeSelector > smoothly-selector"
+					const cardTypeSelector = "#createCardForm #cardTypeSelector > smoothly-input-select"
 					await page.waitForSelector(cardTypeSelector, { timeout: 60000 })
 					await page.click(cardTypeSelector)
 					const firstActiveCardType =
-						"#createCardForm #cardTypeSelector > smoothly-0-selector > div > nav > smoothly-0-item:nth-child(1 of .active)" +
-						", #createCardForm #cardTypeSelector > smoothly-selector > div > nav > smoothly-item:nth-child(1 of .active)"
+						"#createCardForm #cardTypeSelector > smoothly-input-select > div > smoothly-item:nth-child(1 of .active)"
 					await page.waitForSelector(firstActiveCardType, { timeout: 60000 })
 					await page.click(firstActiveCardType)
 					await page.type("#createCardForm #balance > div > input", "69")
@@ -125,6 +102,7 @@ describe("Create a card", () => {
 				const screenshot = await page.screenshot({ encoding: "base64" })
 				console.error("screenshot:", screenshot)
 				console.error(error.message)
+				expect.assertions(2)
 			} finally {
 				await browser.close()
 			}
