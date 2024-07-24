@@ -37,7 +37,29 @@ describe("Create a card", () => {
 					.catch(async error => {
 						throw new Error("Failed to login." + error)
 					})
-				await page.waitForNavigation({ waitUntil: "networkidle0", timeout: 60000 })
+				await page.waitForNavigation({ waitUntil: "networkidle0", timeout: 60000 }).catch(error => {
+					throw new Error("Failed to fetch all card types. " + error)
+				})
+				await page
+					.waitForResponse(
+						response =>
+							response.request().method() === "GET" &&
+							response.url().endsWith("cards/types/modulr") &&
+							response.status() === 200
+					)
+					.catch(async error => {
+						throw new Error("Failed to fetch modulr card types" + error)
+					})
+				await page
+					.waitForResponse(
+						response =>
+							response.request().method() === "GET" &&
+							response.url().endsWith("cards/types/pax2pay") &&
+							response.status() === 200
+					)
+					.catch(async error => {
+						throw new Error("Failed to fetch pax2pay card types" + error)
+					})
 				const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
 				await page.waitForSelector(paymentRoom, { timeout: 60000 })
 				await page.click(paymentRoom)
