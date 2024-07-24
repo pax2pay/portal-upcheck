@@ -48,7 +48,7 @@ describe("Create a card", () => {
 							response.status() === 200
 					)
 					.catch(async error => {
-						throw new Error("Failed to fetch modulr card types" + error)
+						throw new Error("Failed to fetch modulr card types. " + error)
 					})
 				await page
 					.waitForResponse(
@@ -58,7 +58,7 @@ describe("Create a card", () => {
 							response.status() === 200
 					)
 					.catch(async error => {
-						throw new Error("Failed to fetch pax2pay card types" + error)
+						throw new Error("Failed to fetch pax2pay card types. " + error)
 					})
 				const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
 				await page.waitForSelector(paymentRoom, { timeout: 60000 })
