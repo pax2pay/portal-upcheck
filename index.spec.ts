@@ -20,14 +20,11 @@ describe("Create a card", () => {
 						throw new Error("Failed to load login page." + error)
 					})
 				const usernameSelector = "#username input.sc-smoothly-0-input, #username input.sc-smoothly-input"
-				await page.waitForSelector(usernameSelector, { timeout: 60000 })
-				await page.type(usernameSelector, process.env.username ?? "")
+				await page.locator(usernameSelector).fill(process.env.username ?? "")
 				const passwordSelector = "#password input.sc-smoothly-0-input, #password input.sc-smoothly-input"
-				await page.waitForSelector(passwordSelector, { timeout: 60000 })
-				await page.type(passwordSelector, process.env.password ?? "")
+				await page.locator(passwordSelector).fill(process.env.password ?? "")
 				const loginButtonSelector = "#loginBtn button"
-				await page.waitForSelector(loginButtonSelector, { timeout: 60000 })
-				await page.click(loginButtonSelector)
+				await page.locator(loginButtonSelector).click()
 				await page
 					.waitForResponse(
 						response =>
@@ -41,32 +38,24 @@ describe("Create a card", () => {
 					throw new Error("Failed to fetch all card types. " + error)
 				})
 				const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
-				await page.waitForSelector(paymentRoom, { timeout: 60000 })
-				await page.click(paymentRoom)
+				await page.locator(paymentRoom).click()
 				for (let i = 0; i < providers.length; i++) {
 					const createCardButton = "#createCardBtn"
-					await page.waitForSelector(createCardButton, { timeout: 60000 })
-					await page.click(createCardButton)
+					await page.locator(createCardButton).click()
 					const accountSelector = "#createCardForm #accountSelector > smoothly-input-select"
-					await page.waitForSelector(accountSelector, { timeout: 60000 })
-					await page.click(accountSelector)
+					await page.locator(accountSelector).click()
 					const selectedAccount = `#createCardForm #accountSelector > smoothly-input-select> div > smoothly-item:nth-child(1 of .${providers[i]})`
-					await page.waitForSelector(selectedAccount, { timeout: 60000 })
-					await page.click(selectedAccount)
+					await page.locator(selectedAccount).click()
 					const cardTypeSelector = "#createCardForm #cardTypeSelector > smoothly-input-select"
-					await page.waitForSelector(cardTypeSelector, { timeout: 60000 })
-					await page.click(cardTypeSelector)
+					await page.locator(cardTypeSelector).click()
 					const firstActiveCardType =
 						"#createCardForm #cardTypeSelector > smoothly-input-select > div > smoothly-item:nth-child(1 of .active)"
-					await page.waitForSelector(firstActiveCardType, { timeout: 60000 })
-					await page.click(firstActiveCardType)
-					await page.type("#createCardForm #balance > div > input", "69")
+					await page.locator(firstActiveCardType).click()
+					await page.locator("#createCardForm #balance > div > input").fill("69")
 					const invoiceTab = "#invoiceMetadata"
-					await page.waitForSelector(invoiceTab, { timeout: 60000 })
-					await page.click(invoiceTab)
+					await page.locator(invoiceTab).click()
 					const submitButton = "#createCardForm #submitBtn"
-					await page.waitForSelector(submitButton, { timeout: 60000 })
-					await page.click(submitButton)
+					await page.locator(submitButton).click()
 					await page
 						.waitForResponse(
 							response =>
@@ -87,10 +76,9 @@ describe("Create a card", () => {
 						.catch(async error => {
 							throw new Error("Failed to display the card. " + error)
 						})
-					await page.waitForSelector("#csc")
 					const elementHandler = await page.$("#csc")
 					const frame = await elementHandler?.contentFrame()
-					await frame?.waitForSelector("input.sc-smoothly-0-input, input.sc-smoothly-input", { timeout: 60000 })
+					await frame?.locator("input.sc-smoothly-0-input, input.sc-smoothly-input")
 					const csc = await frame?.$eval("input.sc-smoothly-0-input, input.sc-smoothly-input", (el: any) => el.value)
 					expect(csc).toMatch(/^\d{3}$/)
 					await page.goto(`${url}/payment`, {
