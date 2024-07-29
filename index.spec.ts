@@ -39,9 +39,9 @@ describe("Create a card", () => {
 				})
 				const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
 				await page.locator(paymentRoom).click()
+				const createCardButton = "#createCardBtn"
+				await page.locator(createCardButton).click()
 				for (let i = 0; i < providers.length; i++) {
-					const createCardButton = "#createCardBtn"
-					await page.locator(createCardButton).click()
 					const accountSelector = "#createCardForm #accountSelector > smoothly-input-select"
 					await page.locator(accountSelector).click()
 					const selectedAccount = `#createCardForm #accountSelector > smoothly-input-select> div > smoothly-item:nth-child(1 of .${providers[i]})`
@@ -81,10 +81,8 @@ describe("Create a card", () => {
 					await frame?.locator("input.sc-smoothly-0-input, input.sc-smoothly-input")
 					const csc = await frame?.$eval("input.sc-smoothly-0-input, input.sc-smoothly-input", (el: any) => el.value)
 					expect(csc).toMatch(/^\d{3}$/)
-					await page.goto(`${url}/payment`, {
-						waitUntil: "networkidle0",
-						timeout: 60000,
-					})
+					const backButton = "smoothly-0-button:nth-of-type(2) button"
+					await page.locator(backButton).click()
 				}
 			} catch (error) {
 				const screenshot = await page.screenshot({ encoding: "base64" })
