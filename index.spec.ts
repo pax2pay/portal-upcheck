@@ -34,7 +34,7 @@ describe("Create a card", () => {
 					.catch(async error => {
 						throw new Error("Failed to login." + error)
 					})
-				const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
+				const paymentRoom = "smoothly-app-room.sc-p2p-portal:nth-child(3) > li:nth-child(1) > a:nth-child(1)"
 				await page.locator(paymentRoom).click()
 				const createCardButton = "#createCardBtn"
 				await page.locator(createCardButton).click()
