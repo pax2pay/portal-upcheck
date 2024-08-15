@@ -34,9 +34,6 @@ describe("Create a card", () => {
 					.catch(async error => {
 						throw new Error("Failed to login." + error)
 					})
-				await page.waitForNavigation({ waitUntil: "networkidle0", timeout: 60000 }).catch(error => {
-					throw new Error("Failed to fetch all card types. " + error)
-				})
 				const paymentRoom = "li.sc-p2p-portal:nth-child(1) > a[href='/payment']"
 				await page.locator(paymentRoom).click()
 				const createCardButton = "#createCardBtn"
