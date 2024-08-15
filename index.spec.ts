@@ -88,6 +88,7 @@ describe("Create a card", () => {
 				const screenshot = await page.screenshot({ encoding: "base64" })
 				console.error("screenshot:", screenshot)
 				console.error(error.message)
+				throw error;
 			} finally {
 				await browser.close()
 			}
