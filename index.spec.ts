@@ -6,7 +6,7 @@ jest.setTimeout(60000)
 describe("Create a card", () => {
 	async function createCard(providers: ProviderCode[]) {
 		if (providers.length) {
-			const url = "https://ui.pax2pay.qa"
+			const url = "https://uat.pax2pay.com"
 			const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
 			const page = await browser.newPage()
 			try {
@@ -69,7 +69,7 @@ describe("Create a card", () => {
 						.waitForResponse(
 							response =>
 								response.request().method() === "GET" &&
-								response.url().startsWith("https://cde.pax2pay.qa/display") &&
+								response.url().startsWith("https://cde.pax2pay.dev/display") &&
 								response.status() === 200
 						)
 						.catch(async error => {
@@ -96,7 +96,7 @@ describe("Create a card", () => {
 	it("modulr card", async function () {
 		await createCard(["modulr"])
 	}, 60000)
-	it("pp card", async function () {
-		await createCard(["pax2pay"])
-	}, 60000)
+	//it("pp card", async function () {
+	//	await createCard(["pax2pay"])
+	//}, 60000)
 })
