@@ -96,7 +96,7 @@ describe("Create a card", () => {
 	it("modulr card", async function () {
 		await createCard(["modulr"])
 	}, 60000)
-	//it("pp card", async function () {
-	//	await createCard(["pax2pay"])
-	//}, 60000)
+	it("pp card", async function () {
+		await createCard(["pax2pay"])
+	}, 60000)
 })
