@@ -69,7 +69,7 @@ describe("Create a card", () => {
 						.waitForResponse(
 							response =>
 								response.request().method() === "GET" &&
-								response.url().startsWith("https://cde.pax2pay.dev/display") &&
+								response.url().startsWith("https://cde.pax2pay.qa/display") &&
 								response.status() === 200
 						)
 						.catch(async error => {
