@@ -63,7 +63,10 @@ describe("Create a card", () => {
 			const submitButton = "#createCardForm #submitBtn"
 			await page.locator(submitButton).click()
 
-
+			// TODO this just times out dumbly if it's not a 201
+			// for eg, mcomsa_KQbUjtCqxaksGlqhT, we get a response back, but 
+			// we just sit and wait.
+			// throw an exception if we can't get the card
 			await page
 				.waitForResponse(
 					response =>
