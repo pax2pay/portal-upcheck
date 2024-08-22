@@ -30,18 +30,27 @@ describe("Create a card", () => {
 			await page
 				.waitForResponse(
 					response =>
-						response.request().method() === "POST" && response.url().endsWith("login") && response.status() === 200
+						response.request().method() === "POST" && response.url().endsWith("login")
 				)
-				.then(async response => console.log(`trackingId (${provider}): `, (await response.json())?.trackingId))
+				.then(async response => {
+					const waited = await response;
+					assertResponseHasHttpCode(waited, 200);
+					console.log(`trackingId (${provider}): `, (await waited.json())?.trackingId)
+				})
 				.catch(async error => {
 					throw error
 				})
 
 
+
 			// give it a bit of time to grab all the cards
 			await new Promise(resolve => setTimeout(resolve, 5000));
+
+
+
 			const paymentRoom = "#payment-room-link > li:nth-child(1) > a:nth-child(1)"
 			await page.locator(paymentRoom).click()
+
 			const createCardButton = "#createCardBtn"
 			await page.locator(createCardButton).click()
 
@@ -69,17 +78,13 @@ describe("Create a card", () => {
 			const submitButton = "#createCardForm #submitBtn"
 			await page.locator(submitButton).click()
 
-			// TODO this just times out dumbly if it's not a 201
-			// for eg, mcomsa_KQbUjtCqxaksGlqhT, we get a response back, but 
-			// we just sit and wait.
-			// throw an exception if we can't get the card
 			await page
 				.waitForResponse(
 					response =>
 						response.request().method() === "POST" &&
-						response.url().endsWith("/virtual/tokenised") &&
-						response.status() === 201
+						response.url().endsWith("/virtual/tokenised")
 				)
+				.then(async response => assertResponseHasHttpCode(await response, 201))
 				.catch(async error => {
 					throw error
 				})
@@ -87,9 +92,9 @@ describe("Create a card", () => {
 				.waitForResponse(
 					response =>
 						response.request().method() === "GET" &&
-						response.url().startsWith("https://cde.pax2pay.qa/display") &&
-						response.status() === 200
+						response.url().startsWith("https://cde.pax2pay.qa/display")
 				)
+				.then(async response => assertResponseHasHttpCode(await response, 200))
 				.catch(async error => {
 					throw error
 				})
@@ -118,4 +123,12 @@ describe("Create a card", () => {
 	it("pp card", async function () {
 		await createCard("pax2pay")
 	}, 60000)
+
+	function assertResponseHasHttpCode(response: puppeteer.HTTPResponse, status: number) : puppeteer.HTTPResponse {
+		const actual = response.status();
+		if (actual !== status) {
+			throw new Error("Status expected " + status + ", actual " + actual);
+		}
+		return response;
+	}
 })
