@@ -15,6 +15,9 @@ describe("Create a card", () => {
 					waitUntil: "networkidle2",
 					timeout: 60000,
 				})
+				.catch(async error => {
+					throw error
+				})
 
 
 			const usernameSelector = "#username input.sc-smoothly-0-input, #username input.sc-smoothly-input"
@@ -30,6 +33,9 @@ describe("Create a card", () => {
 						response.request().method() === "POST" && response.url().endsWith("login") && response.status() === 200
 				)
 				.then(async response => console.log(`trackingId (${provider}): `, (await response.json())?.trackingId))
+				.catch(async error => {
+					throw error
+				})
 
 
 			// give it a bit of time to grab all the cards
@@ -74,6 +80,9 @@ describe("Create a card", () => {
 						response.url().endsWith("/virtual/tokenised") &&
 						response.status() === 201
 				)
+				.catch(async error => {
+					throw error
+				})
 			await page
 				.waitForResponse(
 					response =>
@@ -81,6 +90,9 @@ describe("Create a card", () => {
 						response.url().startsWith("https://cde.pax2pay.qa/display") &&
 						response.status() === 200
 				)
+				.catch(async error => {
+					throw error
+				})
 
 
 			const elementHandler = await page.$("#csc")
