@@ -93,8 +93,6 @@ describe("Create a card", () => {
 			await frame?.locator("input.sc-smoothly-0-input, input.sc-smoothly-input")
 			const csc = await frame?.$eval("input.sc-smoothly-0-input, input.sc-smoothly-input", (el: any) => el.value)
 			expect(csc).toMatch(/^\d{3}$/)
-			const backButton = "smoothly-button:nth-of-type(2) button"
-			await page.locator(backButton).click()
 		} catch (error) {
 			const screenshot = await page.screenshot({ encoding: "base64" })
 			console.error("screenshot:", screenshot)
@@ -104,6 +102,7 @@ describe("Create a card", () => {
 			await browser.close()
 		}
 	}
+
 	it("modulr card", async function () {
 		await createCard("modulr")
 	}, 60000)
