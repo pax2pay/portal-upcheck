@@ -19,7 +19,6 @@ describe("Create a card", () => {
 					throw error
 				})
 
-
 			const usernameSelector = "#username input.sc-smoothly-0-input, #username input.sc-smoothly-input"
 			await page.locator(usernameSelector).fill(process.env.username ?? "")
 			const passwordSelector = "#password input.sc-smoothly-0-input, #password input.sc-smoothly-input"
@@ -28,25 +27,18 @@ describe("Create a card", () => {
 			await page.locator(loginButtonSelector).click()
 
 			await page
-				.waitForResponse(
-					response =>
-						response.request().method() === "POST" && response.url().endsWith("login")
-				)
+				.waitForResponse(response => response.request().method() === "POST" && response.url().endsWith("login"))
 				.then(async response => {
-					const waited = await response;
-					assertResponseHasHttpCode(waited, 200);
+					const waited = await response
+					assertResponseHasHttpCode(waited, 200)
 					console.log(`trackingId (${provider}): `, (await waited.json())?.trackingId)
 				})
 				.catch(async error => {
 					throw error
 				})
 
-
-
 			// give it a bit of time to grab all the cards
-			await new Promise(resolve => setTimeout(resolve, 5000));
-
-
+			await new Promise(resolve => setTimeout(resolve, 5000))
 
 			const paymentRoom = "#payment-room-link > li:nth-child(1) > a:nth-child(1)"
 			await page.locator(paymentRoom).click()
@@ -80,9 +72,7 @@ describe("Create a card", () => {
 
 			await page
 				.waitForResponse(
-					response =>
-						response.request().method() === "POST" &&
-						response.url().endsWith("/virtual/tokenised")
+					response => response.request().method() === "POST" && response.url().endsWith("/virtual/tokenised")
 				)
 				.then(async response => assertResponseHasHttpCode(await response, 201))
 				.catch(async error => {
@@ -91,28 +81,25 @@ describe("Create a card", () => {
 			await page
 				.waitForResponse(
 					response =>
-						response.request().method() === "GET" &&
-						response.url().startsWith("https://cde.pax2pay.qa/display")
+						response.request().method() === "GET" && response.url().startsWith("https://cde.pax2pay.qa/display")
 				)
 				.then(async response => assertResponseHasHttpCode(await response, 200))
 				.catch(async error => {
 					throw error
 				})
 
-
 			const elementHandler = await page.$("#csc")
 			const frame = await elementHandler?.contentFrame()
 			await frame?.locator("input.sc-smoothly-0-input, input.sc-smoothly-input")
 			const csc = await frame?.$eval("input.sc-smoothly-0-input, input.sc-smoothly-input", (el: any) => el.value)
 			expect(csc).toMatch(/^\d{3}$/)
-			const backButton = "smoothly-0-button:nth-of-type(2) button"
+			const backButton = "smoothly-button:nth-of-type(2) button"
 			await page.locator(backButton).click()
-
 		} catch (error) {
 			const screenshot = await page.screenshot({ encoding: "base64" })
 			console.error("screenshot:", screenshot)
 			console.error(error.message)
-			throw error;
+			throw error
 		} finally {
 			await browser.close()
 		}
@@ -124,11 +111,11 @@ describe("Create a card", () => {
 		await createCard("pax2pay")
 	}, 60000)
 
-	function assertResponseHasHttpCode(response: puppeteer.HTTPResponse, status: number) : puppeteer.HTTPResponse {
-		const actual = response.status();
+	function assertResponseHasHttpCode(response: puppeteer.HTTPResponse, status: number): puppeteer.HTTPResponse {
+		const actual = response.status()
 		if (actual !== status) {
-			throw new Error("Status expected " + status + ", actual " + actual);
+			throw new Error("Status expected " + status + ", actual " + actual)
 		}
-		return response;
+		return response
 	}
 })
