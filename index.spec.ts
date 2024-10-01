@@ -49,7 +49,7 @@ describe("Create a card", () => {
 			// pick an account
 			const accountSelector = "#createCardForm #accountSelector > smoothly-input-select"
 			await page.locator(accountSelector).click()
-			const selectedAccount = `#createCardForm #accountSelector > smoothly-input-select> div > smoothly-item:nth-child(1 of .${provider})`
+			const selectedAccount = `#createCardForm #accountSelector > smoothly-input-select> div > smoothly-item:nth-child(2 of .${provider})`
 			await page.locator(selectedAccount).click()
 
 			// pick a card type
