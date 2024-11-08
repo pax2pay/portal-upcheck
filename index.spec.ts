@@ -63,7 +63,7 @@ describe("Create a card", () => {
 			await page.locator("#createCardForm #balance > div > input").fill("69")
 
 			// select invoice metadata type (no data needed for this)
-			const invoiceTab = "#invoiceMetadata"
+			const invoiceTab = "#invoiceMetadata>div>label"
 			await page.locator(invoiceTab).click()
 
 			// create the card
