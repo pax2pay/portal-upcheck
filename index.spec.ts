@@ -19,9 +19,9 @@ describe("Create a card", () => {
 					throw error
 				})
 
-			const usernameSelector = "#username input.sc-smoothly-0-input, #username input.sc-smoothly-input"
+			const usernameSelector = "#username input.sc-smoothly-input"
 			await page.locator(usernameSelector).fill(process.env.username ?? "")
-			const passwordSelector = "#password input.sc-smoothly-0-input, #password input.sc-smoothly-input"
+			const passwordSelector = "#password input.sc-smoothly-input"
 			await page.locator(passwordSelector).fill(process.env.password ?? "")
 			const loginButtonSelector = "#loginBtn button"
 			await page.locator(loginButtonSelector).click()
