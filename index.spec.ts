@@ -56,7 +56,7 @@ describe("Create a card", () => {
 			const cardTypeSelector = "#createCardForm #cardTypeSelector > smoothly-input-select"
 			await page.locator(cardTypeSelector).click()
 			const firstActiveCardType =
-				"#createCardForm #cardTypeSelector > smoothly-input-select > div:nth-child(3) > smoothly-item:nth-child(1 of .active)"
+				"#createCardForm #cardTypeSelector > smoothly-input-select smoothly-item:nth-child(1 of .active)"
 			await page.locator(firstActiveCardType).click()
 
 			// set a balance
