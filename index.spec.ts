@@ -43,7 +43,7 @@ describe("Create a card", () => {
 			const paymentRoom = "#payment-room-link > li:nth-child(1) > a:nth-child(1)"
 			await page.locator(paymentRoom).click()
 
-			const createCardButton = "#createCardBtn"
+			const createCardButton = "#create-card-button"
 			await page.locator(createCardButton).click()
 
 			// pick an account
@@ -90,8 +90,8 @@ describe("Create a card", () => {
 
 			const elementHandler = await page.$("#csc")
 			const frame = await elementHandler?.contentFrame()
-			await frame?.locator("input.sc-smoothly-0-input, input.sc-smoothly-input")
-			const csc = await frame?.$eval("input.sc-smoothly-0-input, input.sc-smoothly-input", (el: any) => el.value)
+			await frame?.locator("input.sc-smoothly-input")
+			const csc = await frame?.$eval("input.sc-smoothly-input", (el: any) => el.value)
 			expect(csc).toMatch(/^\d{3}$/)
 		} catch (error) {
 			const screenshot = await page.screenshot({ encoding: "base64" })
