@@ -67,7 +67,7 @@ describe("Create a card", () => {
 			await page.locator(invoiceTab).click()
 
 			// create the card
-			const submitButton = "#createCardForm smoothly-submit>button"
+			const submitButton = "#createCardForm #submitButton button"
 			await page.locator(submitButton).click()
 
 			await page
