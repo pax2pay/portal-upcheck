@@ -63,7 +63,7 @@ describe("Create a card", () => {
 			await page.locator("#createCardForm #balance > div > input").fill("69")
 
 			// select invoice metadata type (no data needed for this)
-			const invoiceTab = "p2p-payment-meta-customised>smoothly-tabs>smoothly-tab:first-of-type>div>label"
+			const invoiceTab = "#invoiceMetadata>div>label"
 			await page.locator(invoiceTab).click()
 
 			// create the card
