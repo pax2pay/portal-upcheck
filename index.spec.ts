@@ -79,10 +79,14 @@ describe("Create a card", () => {
 					throw error
 				})
 			await page
-				.waitForResponse(
-					response =>
-						response.request().method() === "GET" && response.url().startsWith("https://cde.pax2pay.qa/display")
-				)
+				.waitForResponse(response => {
+					const url = response.url()
+					return (
+						response.request().method() === "GET" &&
+						url.startsWith("https://cde.pax2pay.qa/display") &&
+						url.endsWith("csc?format=labelled")
+					)
+				})
 				.then(async response => assertResponseHasHttpCode(await response, 200))
 				.catch(async error => {
 					throw error
