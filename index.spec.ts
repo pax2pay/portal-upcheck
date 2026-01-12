@@ -19,21 +19,21 @@ describe("Create a card", () => {
 					throw error
 				})
 
-			const usernameSelector = "#username input.sc-smoothly-input"
+			const usernameSelector = "#username-input"
 			await page.locator(usernameSelector).fill(process.env.username ?? "")
-			const passwordSelector = "#password input.sc-smoothly-input"
+			const passwordSelector = "#password-input"
 			await page.locator(passwordSelector).fill(process.env.password ?? "")
-			const loginButtonSelector = "#loginBtn button"
+			const loginButtonSelector = "#login-button"
 			await page.locator(loginButtonSelector).click()
 
 			await page
 				.waitForResponse(response => response.request().method() === "POST" && response.url().endsWith("login"))
 				.then(async response => {
-					const waited = await response
+					const waited = response
 					assertResponseHasHttpCode(waited, 200)
 					console.log(`trackingId (${provider}): `, (await waited.json())?.trackingId)
 				})
-				.catch(async error => {
+				.catch(error => {
 					throw error
 				})
 
@@ -45,6 +45,9 @@ describe("Create a card", () => {
 
 			const createCardButton = "#create-card-button"
 			await page.locator(createCardButton).click()
+
+			// give it a bit of time to load card-create (And fetch accounts)
+			await new Promise(resolve => setTimeout(resolve, 5000))
 
 			// pick an account
 			const accountSelector = "#createCardForm #accountSelector > smoothly-input-select"
@@ -74,8 +77,8 @@ describe("Create a card", () => {
 				.waitForResponse(
 					response => response.request().method() === "POST" && response.url().endsWith("/virtual/tokenised")
 				)
-				.then(async response => assertResponseHasHttpCode(await response, 201))
-				.catch(async error => {
+				.then(response => assertResponseHasHttpCode(response, 201))
+				.catch(error => {
 					throw error
 				})
 			await page
@@ -83,8 +86,8 @@ describe("Create a card", () => {
 					response =>
 						response.request().method() === "GET" && response.url().startsWith("https://cde.pax2pay.qa/display")
 				)
-				.then(async response => assertResponseHasHttpCode(await response, 200))
-				.catch(async error => {
+				.then(response => assertResponseHasHttpCode(response, 200))
+				.catch(error => {
 					throw error
 				})
 
@@ -93,7 +96,7 @@ describe("Create a card", () => {
 			await frame?.locator("input.sc-smoothly-input")
 			const csc = await frame?.$eval("input.sc-smoothly-input", (el: any) => el.value)
 			expect(csc).toMatch(/^\d{3}$/)
-		} catch (error) {
+		} catch (error: any) {
 			const screenshot = await page.screenshot({ encoding: "base64" })
 			console.error("screenshot:", screenshot)
 			console.error(error.message)
