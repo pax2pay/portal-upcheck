@@ -46,6 +46,9 @@ describe("Create a card", () => {
 			const createCardButton = "#create-card-button"
 			await page.locator(createCardButton).click()
 
+			// give it a bit of time to load card-create (And fetch accounts)
+			await new Promise(resolve => setTimeout(resolve, 5000))
+
 			// pick an account
 			const accountSelector = "#createCardForm #accountSelector > smoothly-input-select"
 			await page.locator(accountSelector).click()
