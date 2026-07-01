@@ -2,6 +2,15 @@ import { ProviderCode } from "@pax2pay/client"
 import dotenv from "dotenv"
 import * as puppeteer from "puppeteer"
 dotenv.config()
+
+// Keys the tests cannot run without. A missing one should fail loudly with a clear message, not
+// silently fall back to empty credentials and surface as a confusing failed login.
+const requiredEnv = ["username", "password"]
+const missingEnv = requiredEnv.filter(key => !process.env[key])
+if (missingEnv.length > 0) {
+	throw new Error(`Missing required environment variable(s): ${missingEnv.join(", ")}. Add them to your .env file.`)
+}
+
 jest.setTimeout(60000)
 describe("Create a card", () => {
 	async function createCard(provider: ProviderCode) {
