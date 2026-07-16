@@ -46,11 +46,10 @@ describe("Create a card", () => {
 					throw error
 				})
 
-			// give it a bit of time to grab all the cards
-			await new Promise(resolve => setTimeout(resolve, 5000))
-
 			const paymentRoom = "#payment-room-link > li:nth-child(1) > a:nth-child(1)"
 			await page.locator(paymentRoom).click()
+			// give it a bit of time to grab all the cards
+			await new Promise(resolve => setTimeout(resolve, 5000))
 
 			const createCardButton = "#create-card-button"
 			await page.locator(createCardButton).click()
