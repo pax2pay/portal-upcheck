@@ -33,27 +33,23 @@ describe("Create a payment", () => {
 			await page.locator(usernameSelector).fill(process.env.username ?? "")
 			const passwordSelector = "#password-input"
 			await page.locator(passwordSelector).fill(process.env.password ?? "")
-			const loginButtonSelector = "#login-button"
-			await page.locator(loginButtonSelector).click()
 
-			await page
-				.waitForResponse(response => response.request().method() === "POST" && response.url().endsWith("login"))
-				.then(async response => {
-					const waited = response
-					assertResponseHasHttpCode(waited, 200)
-					console.log(`trackingId (${provider}): `, (await waited.json())?.trackingId)
-				})
-				.catch(error => {
-					throw error
-				})
+			const loginResponse = page.waitForResponse(
+				response => response.request().method() === "POST" && response.url().endsWith("login")
+			)
+			const loginButtonSelector = "#login-button"
+			await click(page, loginButtonSelector)
+			const waited = await loginResponse
+			assertResponseHasHttpCode(waited, 200)
+			console.log(`trackingId (${provider}): `, (await waited.json())?.trackingId)
 
 			const paymentRoom = "#payment-room-link > li:nth-child(1) > a:nth-child(1)"
-			await page.locator(paymentRoom).click()
+			await click(page, paymentRoom)
 			// give it a bit of time to grab all the accounts
 			await new Promise(resolve => setTimeout(resolve, 5000))
 
 			const createPaymentButton = "smoothly-button.create-payment-button"
-			await page.locator(createPaymentButton).click()
+			await click(page, createPaymentButton)
 
 			// the "Card" tab of the payment-create form is open by default, no need to select it
 
@@ -74,28 +70,22 @@ describe("Create a payment", () => {
 			// leave the metadata section (p2p-payment-meta-customised) on its default tab, no data needed there
 
 			// create the payment
+			// registered before the click: submission and the CDE display load both resolve fast enough
+			// that attaching these listeners afterwards can miss them entirely
+			const paymentCreated = page.waitForResponse(
+				response => response.request().method() === "POST" && response.url().endsWith("/payments/tokenised")
+			)
+			// host-agnostic: the CDE domain varies by environment (e.g. cde.pax2pay.qa vs cde.pax2pay.com)
+			const cdeDisplayed = page.waitForResponse(
+				response => response.request().method() === "GET" && response.url().includes("/display/")
+			)
 			const submitButton = "p2p-payment-create .actions smoothly-button:nth-child(2) button"
-			await page.locator(submitButton).click()
+			await click(page, submitButton)
 
-			await page
-				.waitForResponse(
-					response => response.request().method() === "POST" && response.url().endsWith("/payments/tokenised")
-				)
-				// unlike the card endpoint (which returns 201 Created), PaymentRestController answers every
-				// POST, including this one, with 200 OK
-				.then(response => assertResponseHasHttpCode(response, 200))
-				.catch(error => {
-					throw error
-				})
-			await page
-				.waitForResponse(
-					response =>
-						response.request().method() === "GET" && response.url().startsWith("https://cde.pax2pay.qa/display")
-				)
-				.then(response => assertResponseHasHttpCode(response, 200))
-				.catch(error => {
-					throw error
-				})
+			// unlike the card endpoint (which returns 201 Created), PaymentRestController answers every
+			// POST, including this one, with 200 OK
+			assertResponseHasHttpCode(await paymentCreated, 200)
+			assertResponseHasHttpCode(await cdeDisplayed, 200)
 
 			const elementHandler = await page.$("#csc")
 			const frame = await elementHandler?.contentFrame()
@@ -127,16 +117,20 @@ describe("Create a payment", () => {
 		return response
 	}
 
-	// Selecting an item closes the smoothly-input-select's dropdown and unmounts the item, so
-	// Locator/page.click's actionability polling (bounding box, "is this the same stable element")
-	// either spuriously times out after the click already landed, or never fires the click at all.
-	// Dispatching the click directly on the element sidesteps that polling entirely; the "has-value"
-	// class the select adds once something is selected confirms it actually took.
+	// Locator.click's actionability polling (bounding box, "is this the same stable element") keeps
+	// re-checking after the click too, and every one of these clicks triggers a re-render (a panel
+	// opening, an item's dropdown unmounting, a submit) that can make it spuriously time out even
+	// though the click already landed. Dispatching the click directly on the element sidesteps that.
+	async function click(page: puppeteer.Page, selector: string) {
+		const element = await page.waitForSelector(selector, { visible: true })
+		await element?.evaluate((el: any) => el.click())
+	}
+
 	async function selectDropdownItem(page: puppeteer.Page, toggleSelector: string, itemSelector: string) {
-		const toggle = await page.waitForSelector(toggleSelector)
-		await toggle?.evaluate((element: any) => element.click())
-		const item = await page.waitForSelector(itemSelector, { visible: true })
-		await item?.evaluate((element: any) => element.click())
+		await click(page, toggleSelector)
+		await click(page, itemSelector)
+		// confirm the selection actually took via the "has-value" class the select adds once something
+		// is selected, since the item click above can't be verified any other way once it unmounts
 		await page.waitForSelector(`${toggleSelector}.has-value`, { timeout: 5000 })
 	}
 })
