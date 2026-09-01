@@ -12,13 +12,14 @@ if (missingEnv.length > 0) {
 }
 
 jest.setTimeout(60000)
-describe("Create a card", () => {
-	async function createCard(provider: ProviderCode) {
-		const url = "https://qa.pax2pay.com"
+describe("Create a payment", () => {
+	async function createPayment(provider: ProviderCode) {
+		const url = "https://uat.pax2pay.com"
 		const browser = await puppeteer.launch({ headless: false, devtools: false, slowMo: 30 })
 		const page = await browser.newPage()
 		try {
 			page.setViewport({ width: 1920, height: 1080 })
+
 			await page
 				.goto(`${url}/login`, {
 					waitUntil: "networkidle2",
@@ -48,41 +49,41 @@ describe("Create a card", () => {
 
 			const paymentRoom = "#payment-room-link > li:nth-child(1) > a:nth-child(1)"
 			await page.locator(paymentRoom).click()
-			// give it a bit of time to grab all the cards
+			// give it a bit of time to grab all the accounts
 			await new Promise(resolve => setTimeout(resolve, 5000))
 
-			const createCardButton = "#create-card-button"
-			await page.locator(createCardButton).click()
+			const createPaymentButton = "smoothly-button.create-payment-button"
+			await page.locator(createPaymentButton).click()
+
+			// the "Card" tab of the payment-create form is open by default, no need to select it
 
 			// pick an account
-			const accountSelector = "#createCardForm #accountSelector > smoothly-input-select"
-			await page.locator(accountSelector).click()
-			const selectedAccount = `#createCardForm #accountSelector > smoothly-input-select smoothly-item:nth-child(1 of .${provider})`
-			await page.locator(selectedAccount).click()
+			const accountSelector = "p2p-payment-create-card p2p-account-select > smoothly-input-select"
+			const selectedAccount = `p2p-payment-create-card p2p-account-select > smoothly-input-select smoothly-item:nth-child(1 of .${provider})`
+			await selectDropdownItem(page, accountSelector, selectedAccount)
 
 			// pick a card type
-			const cardTypeSelector = "#createCardForm #cardTypeSelector > smoothly-input-select"
-			await page.locator(cardTypeSelector).click()
+			const cardTypeSelector = "p2p-payment-create-card p2p-card-type-select > smoothly-input-select"
 			const firstActiveCardType =
-				"#createCardForm #cardTypeSelector > smoothly-input-select smoothly-item:nth-child(1 of :not([disabled])"
-			await page.locator(firstActiveCardType).click()
+				"p2p-payment-create-card p2p-card-type-select > smoothly-input-select smoothly-item:nth-child(1 of :not([disabled])"
+			await selectDropdownItem(page, cardTypeSelector, firstActiveCardType)
 
 			// set a balance
-			await page.locator("#createCardForm #balance > div > input").fill("69")
+			await page.locator("p2p-payment-create-card #balance > div > input").fill("69")
 
-			// select invoice metadata type (no data needed for this)
-			const invoiceTab = "#invoiceMetadata>div>label"
-			await page.locator(invoiceTab).click()
+			// leave the metadata section (p2p-payment-meta-customised) on its default tab, no data needed there
 
-			// create the card
-			const submitButton = "#createCardForm #submitButton button"
+			// create the payment
+			const submitButton = "p2p-payment-create .actions smoothly-button:nth-child(2) button"
 			await page.locator(submitButton).click()
 
 			await page
 				.waitForResponse(
-					response => response.request().method() === "POST" && response.url().endsWith("/virtual/tokenised")
+					response => response.request().method() === "POST" && response.url().endsWith("/payments/tokenised")
 				)
-				.then(response => assertResponseHasHttpCode(response, 201))
+				// unlike the card endpoint (which returns 201 Created), PaymentRestController answers every
+				// POST, including this one, with 200 OK
+				.then(response => assertResponseHasHttpCode(response, 200))
 				.catch(error => {
 					throw error
 				})
@@ -111,11 +112,11 @@ describe("Create a card", () => {
 		}
 	}
 
-	it("modulr card", async function () {
-		await createCard("modulr")
+	it("modulr payment", async function () {
+		await createPayment("modulr")
 	}, 60000)
-	it("pp card", async function () {
-		await createCard("pax2pay")
+	it("pp payment", async function () {
+		await createPayment("pax2pay")
 	}, 60000)
 
 	function assertResponseHasHttpCode(response: puppeteer.HTTPResponse, status: number): puppeteer.HTTPResponse {
@@ -124,5 +125,18 @@ describe("Create a card", () => {
 			throw new Error("Status expected " + status + ", actual " + actual)
 		}
 		return response
+	}
+
+	// Selecting an item closes the smoothly-input-select's dropdown and unmounts the item, so
+	// Locator/page.click's actionability polling (bounding box, "is this the same stable element")
+	// either spuriously times out after the click already landed, or never fires the click at all.
+	// Dispatching the click directly on the element sidesteps that polling entirely; the "has-value"
+	// class the select adds once something is selected confirms it actually took.
+	async function selectDropdownItem(page: puppeteer.Page, toggleSelector: string, itemSelector: string) {
+		const toggle = await page.waitForSelector(toggleSelector)
+		await toggle?.evaluate((element: any) => element.click())
+		const item = await page.waitForSelector(itemSelector, { visible: true })
+		await item?.evaluate((element: any) => element.click())
+		await page.waitForSelector(`${toggleSelector}.has-value`, { timeout: 5000 })
 	}
 })
